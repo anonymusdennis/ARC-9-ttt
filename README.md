@@ -5,6 +5,18 @@
 
 ARC9 is so called for being the ninth public Arctic base. It is designed to be a long-term sustainable successor to ArcCW.
 
+## TTT2 Integration
+
+This version includes full integration with TTT2 (Trouble in Terrorist Town 2)!
+
+### Features:
+- **Role-based weapon customization** - Configure which roles can customize weapons
+- **Role-based infinite ammo** - Set infinite ammo per role
+- **Traitor shop integration** - Purchase infinite ammo and other items
+- **Full custom role support** - Works with all TTT2 roles including custom ones
+
+See [TTT2_INTEGRATION.md](TTT2_INTEGRATION.md) for detailed documentation.
+
 ## FAQ
 
 ### Why should I use this over ArcCW?
