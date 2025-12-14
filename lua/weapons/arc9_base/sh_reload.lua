@@ -367,7 +367,14 @@ end
 local arc9_infinite_ammo = GetConVar("arc9_infinite_ammo")
 
 function SWEP:GetInfiniteAmmo()
-    return arc9_infinite_ammo:GetBool() or self:GetProcessedValue("InfiniteAmmo", true)
+    local base = arc9_infinite_ammo:GetBool() or self:GetProcessedValue("InfiniteAmmo", true)
+    
+    -- Check TTT2 role-based infinite ammo
+    if ARC9.TTT2 and ARC9.TTT2.HasInfiniteAmmo and IsValid(self:GetOwner()) and self:GetOwner():IsPlayer() then
+        return base or ARC9.TTT2.HasInfiniteAmmo(self:GetOwner())
+    end
+    
+    return base
 end
 
 function SWEP:EndReload()

@@ -28,6 +28,13 @@ net.Receive("arc9_togglecustomize", function(len, ply)
 
     if !wpn or !IsValid(wpn) or !wpn.ARC9 then return end
 
+    -- Check TTT2 permissions
+    if ARC9.TTT2 and ARC9.TTT2.CanCustomize then
+        if not ARC9.TTT2.CanCustomize(ply) then
+            return
+        end
+    end
+
     wpn:ToggleCustomize(bf)
 end)
 
@@ -40,6 +47,13 @@ net.Receive("arc9_networkweapon", function(len, ply)
     if !wpn.ARC9 then return end
 
     if arc9_atts_nocustomize:GetBool() then return end
+
+    -- Check TTT2 permissions
+    if ARC9.TTT2 and ARC9.TTT2.CanCustomize then
+        if not ARC9.TTT2.CanCustomize(ply) then
+            return
+        end
+    end
 
     wpn:ReceiveWeapon()
 end)

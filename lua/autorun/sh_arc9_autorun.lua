@@ -11,6 +11,12 @@ for _, v in pairs(file.Find(searchdir .. "common/*", "LUA")) do
     AddCSLuaFile(searchdir .. "common/" .. v)
 end
 
+-- Load TTT2 integration files
+for _, v in pairs(file.Find(searchdir .. "common/ttt2/*", "LUA")) do
+    include(searchdir .. "common/ttt2/" .. v)
+    AddCSLuaFile(searchdir .. "common/ttt2/" .. v)
+end
+
 for _, v in pairs(file.Find(searchdir .. "shared/*", "LUA")) do
     include(searchdir .. "shared/" .. v)
     AddCSLuaFile(searchdir .. "shared/" .. v)

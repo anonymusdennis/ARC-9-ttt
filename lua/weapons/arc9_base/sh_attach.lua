@@ -204,6 +204,19 @@ function SWEP:ThinkCustomize()
     local owner = self:GetOwner()
 
     if owner:KeyPressed(ARC9.IN_CUSTOMIZE) and !owner:KeyDown(IN_USE) and !self:GetGrenadePrimed() then
+        -- Check TTT2 permissions before opening customization
+        if CLIENT and ARC9.TTT2 and ARC9.TTT2.CanCustomize then
+            if not ARC9.TTT2.CanCustomize(owner) then
+                if owner == LocalPlayer() then
+                    -- Show a notification to the player
+                    if notification then
+                        notification.AddLegacy("Your role cannot customize weapons!", NOTIFY_ERROR, 3)
+                    end
+                end
+                return
+            end
+        end
+        
         self:ToggleCustomize(!self:GetCustomize())
     end
 
