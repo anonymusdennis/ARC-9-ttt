@@ -27,7 +27,12 @@ ARC9.TTT2.GetRolePermissions = function()
         return perms
     end
     
-    local convarStr = GetConVar("arc9_ttt2_role_permissions"):GetString()
+    local convar = GetConVar("arc9_ttt2_role_permissions")
+    if not convar then
+        return ARC9.TTT2.DefaultRolePermissions
+    end
+    
+    local convarStr = convar:GetString()
     
     if convarStr == "" then
         return ARC9.TTT2.DefaultRolePermissions
@@ -47,6 +52,11 @@ ARC9.TTT2.GetRolePermissions = function()
         end
     end
     
+    -- Add default if not present
+    if not perms.default then
+        perms.default = ARC9.TTT2.DefaultRolePermissions.default
+    end
+    
     return perms
 end
 
@@ -56,14 +66,20 @@ ARC9.TTT2.CanCustomize = function(ply)
     if not ARC9.TTT2.Installed() then return true end -- If TTT2 not installed, allow customization
     
     -- Check global disable
-    if GetConVar("arc9_atts_nocustomize"):GetBool() then
+    local nocustomize = GetConVar("arc9_atts_nocustomize")
+    if nocustomize and nocustomize:GetBool() then
         return false
     end
     
     -- Check TTT2 role-based permissions
     local rolePerms = ARC9.TTT2.GetRolePermissions()
     
-    local role = ply:GetSubRoleData()
+    -- Try to get the player's role
+    local role = nil
+    if ply.GetSubRoleData then
+        role = ply:GetSubRoleData()
+    end
+    
     if not role then
         -- Fallback to default permissions
         return rolePerms.default and rolePerms.default.customize or false
@@ -86,15 +102,25 @@ ARC9.TTT2.HasInfiniteAmmo = function(ply)
     if not ARC9.TTT2.Installed() then return false end
     
     -- Check global infinite ammo
-    if GetConVar("arc9_infinite_ammo"):GetBool() then
+    local infiniteammo = GetConVar("arc9_infinite_ammo")
+    if infiniteammo and infiniteammo:GetBool() then
         return true
     end
     
     -- Check TTT2 role-based permissions
     local rolePerms = ARC9.TTT2.GetRolePermissions()
     
-    local role = ply:GetSubRoleData()
+    -- Try to get the player's role
+    local role = nil
+    if ply.GetSubRoleData then
+        role = ply:GetSubRoleData()
+    end
+    
     if not role then
+        -- Check player-specific flag before default
+        if ply.ARC9_TTT2_InfiniteAmmo then
+            return true
+        end
         return rolePerms.default and rolePerms.default.infinite_ammo or false
     end
     
@@ -174,7 +200,9 @@ if SERVER then
     
     -- Initialize player-specific flags on spawn
     hook.Add("PlayerSpawn", "ARC9_TTT2_InitPlayer", function(ply)
-        ply.ARC9_TTT2_InfiniteAmmo = false
+        if not ply.ARC9_TTT2_InfiniteAmmo then
+            ply.ARC9_TTT2_InfiniteAmmo = false
+        end
     end)
     
     -- Reset player flags on round end
@@ -185,6 +213,9 @@ if SERVER then
             end
         end
     end)
+    
+    print("[ARC9 TTT2] Integration loaded (Server)")
 else
     -- Client-side only
+    print("[ARC9 TTT2] Integration loaded (Client)")
 end
