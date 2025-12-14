@@ -68,35 +68,9 @@ hook.Add("Initialize", "ARC9_TTT2_CheckInstalled", function()
             print("[ARC9 TTT2] " .. buyer:GetName() .. " purchased infinite ammo")
         end
     end)
-end)
-
--- Reset player flags on death
-hook.Add("PlayerDeath", "ARC9_TTT2_InfiniteAmmo_Death", function(victim, inflictor, attacker)
-    if IsValid(victim) and victim.ARC9_TTT2_InfiniteAmmo then
-        victim.ARC9_TTT2_InfiniteAmmo = false
-    end
-end)
-
--- Initialize player-specific flags on spawn
-hook.Add("PlayerSpawn", "ARC9_TTT2_InitPlayer", function(ply)
-    if not ply.ARC9_TTT2_InfiniteAmmo then
-        ply.ARC9_TTT2_InfiniteAmmo = false
-    end
-end)
-
--- Reset player flags on round beginning
-hook.Add("TTTBeginRound", "ARC9_TTT2_RoundBegin", function()
-    for _, ply in ipairs(player.GetAll()) do
-        if IsValid(ply) then
-            ply.ARC9_TTT2_InfiniteAmmo = false
-        end
-    end
-end)
-
--- Add language strings for the shop item
-hook.Add("Initialize", "ARC9_TTT2_AddLanguage", function()
-    -- Wait for LANG to be available
-    timer.Simple(1, function()
+    
+    -- Add language strings for the shop item
+    hook.Add("TTT2FinishedLoading", "ARC9_TTT2_AddLanguage", function()
         if LANG then
             LANG.AddToLanguage("english", "arc9_ttt2_infinite_ammo_bought", "You now have infinite ammo for ARC9 weapons!")
             LANG.AddToLanguage("english", "arc9_infinite_ammo_name", "Infinite Ammo (ARC9)")

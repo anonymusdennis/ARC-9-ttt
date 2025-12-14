@@ -209,7 +209,7 @@ function SWEP:ThinkCustomize()
             if not ARC9.TTT2.CanCustomize(owner) then
                 if owner == LocalPlayer() then
                     -- Show a notification to the player
-                    if notification then
+                    if notification and notification.AddLegacy then
                         notification.AddLegacy("Your role cannot customize weapons!", NOTIFY_ERROR, 3)
                     end
                 end

@@ -75,10 +75,7 @@ ARC9.TTT2.CanCustomize = function(ply)
     local rolePerms = ARC9.TTT2.GetRolePermissions()
     
     -- Try to get the player's role
-    local role = nil
-    if ply.GetSubRoleData then
-        role = ply:GetSubRoleData()
-    end
+    local role = ply.GetSubRoleData and ply:GetSubRoleData() or nil
     
     if not role then
         -- Fallback to default permissions
@@ -111,10 +108,7 @@ ARC9.TTT2.HasInfiniteAmmo = function(ply)
     local rolePerms = ARC9.TTT2.GetRolePermissions()
     
     -- Try to get the player's role
-    local role = nil
-    if ply.GetSubRoleData then
-        role = ply:GetSubRoleData()
-    end
+    local role = ply.GetSubRoleData and ply:GetSubRoleData() or nil
     
     if not role then
         -- Check player-specific flag before default
@@ -180,7 +174,7 @@ end
 
 if SERVER then
     -- Create the ConVar for role permissions
-    CreateConVar("arc9_ttt2_role_permissions", "", FCVAR_ARCHIVE + FCVAR_REPLICATED, "Role-based permissions for ARC9 weapons in TTT2 format: role:customize:infiniteammo|role2:...")
+    CreateConVar("arc9_ttt2_role_permissions", "", FCVAR_ARCHIVE + FCVAR_REPLICATED, "Role-based permissions for ARC9 weapons in TTT2. Format: role:customize:infiniteammo|role2:customize:infiniteammo (e.g., traitor:1:0|detective:1:1)")
     
     -- Network string for syncing permissions
     util.AddNetworkString("arc9_ttt2_permissions_update")
@@ -211,6 +205,22 @@ if SERVER then
             if IsValid(ply) then
                 ply.ARC9_TTT2_InfiniteAmmo = false
             end
+        end
+    end)
+    
+    -- Reset player flags on round beginning
+    hook.Add("TTTBeginRound", "ARC9_TTT2_RoundBegin", function()
+        for _, ply in ipairs(player.GetAll()) do
+            if IsValid(ply) then
+                ply.ARC9_TTT2_InfiniteAmmo = false
+            end
+        end
+    end)
+    
+    -- Reset player flags on death
+    hook.Add("PlayerDeath", "ARC9_TTT2_InfiniteAmmo_Death", function(victim, inflictor, attacker)
+        if IsValid(victim) and victim.ARC9_TTT2_InfiniteAmmo then
+            victim.ARC9_TTT2_InfiniteAmmo = false
         end
     end)
     
